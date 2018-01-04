@@ -1,5 +1,7 @@
 # IntelHex
 
+[![CircleCI](https://circleci.com/gh/fhunleth/intel_hex.svg?style=svg)](https://circleci.com/gh/fhunleth/intel_hex)
+
 This is a small library to help decode [Intel HEX records](https://en.wikipedia.org/wiki/Intel_HEX). This file format is frequently used for firmware images on microcontrollers.
 
 The main interface returns a lowlevel view of the records:
