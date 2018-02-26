@@ -1,4 +1,8 @@
 defmodule IntelHex.Record do
+  @moduledoc """
+  Information for one line in an Intel HEX file
+  """
+
   defstruct address: 0, data: [], type: :data
 
   @type types ::

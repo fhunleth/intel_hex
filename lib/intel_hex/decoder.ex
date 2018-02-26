@@ -2,6 +2,8 @@ defmodule IntelHex.Decoder do
   alias IntelHex.{DecodeError, Record}
   use Bitwise
 
+  @moduledoc false
+
   @doc """
   Decode one hex record.
 

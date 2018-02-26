@@ -1,6 +1,6 @@
 defmodule IntelHex do
   @moduledoc """
-  Documentation for IntelHex.
+  Decode Intel HEX files
   """
   alias IntelHex.{Decoder, DecodeError, Flatten, Record}
 

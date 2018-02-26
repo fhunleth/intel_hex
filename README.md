@@ -1,12 +1,14 @@
 # IntelHex
 
 [![CircleCI](https://circleci.com/gh/fhunleth/intel_hex.svg?style=svg)](https://circleci.com/gh/fhunleth/intel_hex)
+[![Hex version](https://img.shields.io/hexpm/v/intel_hex.svg "Hex version")](https://hex.pm/packages/intel_hex)
 
 This is a small library to help decode [Intel HEX records](https://en.wikipedia.org/wiki/Intel_HEX). This file format is frequently used for firmware images on microcontrollers.
 
 The main interface returns a lowlevel view of the records:
 
 ```elixir
+iex> records = IntelHex.decode_file!("test/test.hex")
 [
   %IntelHex.Record{address: 0, data: [0, 0], type: :extended_linear_address},
   %IntelHex.Record{
@@ -47,10 +49,6 @@ def deps do
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/intel_hex](https://hexdocs.pm/intel_hex).
 
 ## Future work
 

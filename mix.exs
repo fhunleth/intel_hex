@@ -5,22 +5,21 @@ defmodule IntelHex.MixProject do
     [
       app: :intel_hex,
       version: "0.1.0",
-      description: "Decode Intel Hex formatted files",
-      package: package(),
       elixir: "~> 1.4",
+      description: "Decode Intel Hex formatted files",
       source_url: "https://github.com/fhunleth/intel_hex",
-      docs: [extras: ["README.md"]],
+      docs: [extras: ["README.md"], main: "readme"],
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package()
     ]
   end
 
   def application do
-    [
-    ]
+    []
   end
 
-  defp deps do
+  defp deps() do
     [
       {:ex_doc, "~> 0.11", only: :dev}
     ]
@@ -33,5 +32,4 @@ defmodule IntelHex.MixProject do
       links: %{"GitHub" => "https://github.com/fhunleth/intel_hex"}
     ]
   end
-
 end

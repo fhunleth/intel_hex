@@ -1,4 +1,6 @@
 defmodule IntelHex.Flatten do
+  @moduledoc false
+
   def to_list(records, options \\ []) do
     fill = Keyword.get(options, :fill, 255)
     start = Keyword.get(options, :start, 0)
