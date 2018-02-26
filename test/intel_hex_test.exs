@@ -104,4 +104,17 @@ defmodule IntelHexTest do
                %IntelHex.Record{address: 0, data: [], type: :eof}
              ]
   end
+
+  test "decode_file! raises on errors" do
+    assert_raise(File.Error, fn -> IntelHex.decode_file!("test/does_not_exist.hex") end)
+
+    assert_raise(IntelHex.DecodeError, fn ->
+      IntelHex.decode_file!("test/test-badchecksum.hex")
+    end)
+  end
+
+  test "decode_file returns errors" do
+    assert {:error, :enoent} == IntelHex.decode_file("test/does_not_exist.hex")
+    assert {:error, _} = IntelHex.decode_file("test/test-badchecksum.hex")
+  end
 end
