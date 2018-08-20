@@ -5,7 +5,7 @@ defmodule IntelHex.MixProject do
     [
       app: :intel_hex,
       version: "0.1.0",
-      elixir: "~> 1.4",
+      elixir: "~> 1.6",
       description: "Decode Intel Hex formatted files",
       source_url: "https://github.com/fhunleth/intel_hex",
       docs: [extras: ["README.md"], main: "readme"],
@@ -21,7 +21,7 @@ defmodule IntelHex.MixProject do
 
   defp deps() do
     [
-      {:ex_doc, "~> 0.11", only: :dev}
+      {:ex_doc, "~> 0.18", only: [:dev, :test], runtime: false}
     ]
   end
 
