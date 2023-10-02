@@ -3,7 +3,7 @@ defmodule IntelHexTest do
   doctest IntelHex
 
   test "can read a .hex file" do
-    hex = IntelHex.decode_file!("test/test.hex")
+    hex = IntelHex.load!("test/test.hex")
 
     assert hex.records ==
              [
@@ -37,16 +37,16 @@ defmodule IntelHexTest do
              ]
   end
 
-  test "decode_file! raises on errors" do
-    assert_raise(File.Error, fn -> IntelHex.decode_file!("test/does_not_exist.hex") end)
+  test "load! raises on errors" do
+    assert_raise(File.Error, fn -> IntelHex.load!("test/does_not_exist.hex") end)
 
     assert_raise(IntelHex.DecodeError, fn ->
-      IntelHex.decode_file!("test/test-badchecksum.hex")
+      IntelHex.load!("test/test-badchecksum.hex")
     end)
   end
 
-  test "decode_file returns errors" do
-    assert {:error, %File.Error{}} = IntelHex.decode_file("test/does_not_exist.hex")
-    assert {:error, _} = IntelHex.decode_file("test/test-badchecksum.hex")
+  test "load returns errors" do
+    assert {:error, %File.Error{}} = IntelHex.load("test/does_not_exist.hex")
+    assert {:error, _} = IntelHex.load("test/test-badchecksum.hex")
   end
 end

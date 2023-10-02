@@ -8,28 +8,14 @@ This is a small library to help decode [Intel HEX records](https://en.wikipedia.
 The main interface returns a low-level view of the records:
 
 ```elixir
-iex> records = IntelHex.decode_file!("test/test.hex")
-[
-  %IntelHex.Record{address: 0, data: [0, 0], type: :extended_linear_address},
-  %IntelHex.Record{
-    address: 0,
-    data: [2, 24, 0, 2, 24, 3, 8, 253, 9, 2, 0, 2, 24, 11, 11, 50],
-    type: :data
-  },
-  %IntelHex.Record{
-    address: 16,
-    data: [11, 60, 34, 2, 24, 19, 10, 236, 11, 0],
-    type: :data
-  },
-  ...
-  %IntelHex.Record{address: 0, data: [], type: :eof}
-]
+iex(2)> hex = IntelHex.load!("./test/test.hex")
+%IntelHex{num_records: 7}
 ```
 
 If you'd like the records to be flattened back into a memory image, you can run `IntelHex.flatten_to_list/2` against the records:
 
 ```elixir
-iex(2)> IntelHex.flatten_to_list(records)
+iex(2)> IntelHex.flatten_to_list(hex)
 [2, 24, 0, 2, 24, 3, 8, 253, 9, 2, 0, 2, 24, 11, 11, 50, 11, 60, 34, 2, 24, 19,
  10, 236, 11, 0, 255, 2, 24, 27, 70, 154, 2, 29, 225, 2, 24, 35, 228, 255, 225,
  64, 255, 2, 24, 43, 127, 7, 34, 211, ...]

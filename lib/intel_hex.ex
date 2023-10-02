@@ -11,12 +11,12 @@ defmodule IntelHex do
   @type t() :: %__MODULE__{path: String.t(), records: [Record.t()]}
 
   @doc """
-  Decode an Intel Hex-formatted file
+  Load an Intel Hex-formatted file into memory
 
   Raises File.Error or IntelHex.DecodeError if an error occurs.
   """
-  @spec decode_file!(String.t()) :: t()
-  def decode_file!(path) do
+  @spec load!(Path.t()) :: t()
+  def load!(path) do
     records =
       File.stream!(path)
       |> Stream.map(&Record.decode!/1)
@@ -26,11 +26,11 @@ defmodule IntelHex do
   end
 
   @doc """
-  Decode an Intel Hex-formatted file
+  Load an Intel Hex-formatted file into memory
   """
-  @spec decode_file(String.t()) :: {:ok, t()} | {:error, term()}
-  def decode_file(path) do
-    {:ok, decode_file!(path)}
+  @spec load(Path.t()) :: {:ok, t()} | {:error, term()}
+  def load(path) do
+    {:ok, load!(path)}
   rescue
     exception in [File.Error, DecodeError] ->
       {:error, exception}
