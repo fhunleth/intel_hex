@@ -17,7 +17,7 @@ defmodule IntelHex do
   def decode_record(string) do
     {:ok, decode_record!(string)}
   rescue
-    exception in DecodeError -> {:error, exception.message}
+    exception in DecodeError -> {:error, exception}
   end
 
   defdelegate decode_record!(string), to: Record, as: :decode!
@@ -43,7 +43,7 @@ defmodule IntelHex do
     {:ok, decode_file!(path)}
   rescue
     exception in [File.Error, DecodeError] ->
-      {:error, Map.get(exception, :reason) || Map.get(exception, :message)}
+      {:error, exception}
   end
 
   @doc """

@@ -114,7 +114,7 @@ defmodule IntelHexTest do
   end
 
   test "decode_file returns errors" do
-    assert {:error, :enoent} == IntelHex.decode_file("test/does_not_exist.hex")
+    assert {:error, %File.Error{}} = IntelHex.decode_file("test/does_not_exist.hex")
     assert {:error, _} = IntelHex.decode_file("test/test-badchecksum.hex")
   end
 end
