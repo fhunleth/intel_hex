@@ -2,7 +2,10 @@ defmodule IntelHex do
   @moduledoc """
   Decode Intel HEX files
   """
-  alias IntelHex.{Decoder, DecodeError, Flatten, Record}
+  alias IntelHex.DecodeError
+  alias IntelHex.Decoder
+  alias IntelHex.Flatten
+  alias IntelHex.Record
 
   @doc """
   Decode one Intel Hex record

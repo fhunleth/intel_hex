@@ -34,9 +34,7 @@ defmodule IntelHex.Flatten do
        ) do
     raise ArgumentError,
       message:
-        "Records not in sequential order: got #{inspect(address, base: :hex)} but expecting #{
-          inspect(base + offset, base: :hex)
-        } or later"
+        "Records not in sequential order: got #{inspect(address, base: :hex)} but expecting #{inspect(base + offset, base: :hex)} or later"
   end
 
   defp to_list(base, offset, [%{type: :data, address: address, data: data} | rest], rarray, fill)
@@ -56,17 +54,14 @@ defmodule IntelHex.Flatten do
   defp to_list(base, offset, [%{type: :data, address: address} | _rest], _rarray, _fill) do
     raise ArgumentError,
       message:
-        "Records not in sequential order: got #{inspect(address, base: :hex)} but expecting #{
-          inspect(base + offset, base: :hex)
-        } or later"
+        "Records not in sequential order: got #{inspect(address, base: :hex)} but expecting #{inspect(base + offset, base: :hex)} or later"
   end
 
   defp to_list(_base, _offset, [%{type: :eof} | _rest], rarray, _fill) do
     Enum.reverse(rarray)
   end
 
-  defp to_list(base, offset, [head | rest], rarray, fill) do
-    IO.inspect(head)
+  defp to_list(base, offset, [_head | rest], rarray, fill) do
     to_list(base, offset, rest, rarray, fill)
   end
 end

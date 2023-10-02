@@ -1,6 +1,7 @@
 defmodule IntelHex.Decoder do
-  alias IntelHex.{DecodeError, Record}
-  use Bitwise
+  alias IntelHex.DecodeError
+  alias IntelHex.Record
+  import Bitwise
 
   @moduledoc false
 
@@ -29,7 +30,7 @@ defmodule IntelHex.Decoder do
     [String.to_integer(hex, 16) | to_integers(rest)]
   rescue
     ArgumentError ->
-      raise DecodeError, message: "Expecting a hex integer, but got #{inspect(hex)}."
+      reraise DecodeError, message: "Expecting a hex integer, but got #{inspect(hex)}."
   end
 
   defp to_integers(_other) do
