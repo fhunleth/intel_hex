@@ -19,7 +19,7 @@ defmodule IntelHex.Record do
   @doc """
   Decode one Intel Hex record
   """
-  @spec decode(String.t()) :: {:ok, Record.t()} | {:error, term()}
+  @spec decode(String.t()) :: {:ok, t()} | {:error, term()}
   def decode(string) do
     {:ok, decode!(string)}
   rescue

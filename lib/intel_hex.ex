@@ -8,7 +8,7 @@ defmodule IntelHex do
   alias IntelHex.Record
 
   defstruct path: nil, records: []
-  @type t() :: %__MODULE__{path: String.t() | nil, records: [Record.t()]}
+  @type t() :: %__MODULE__{path: String.t(), records: [Record.t()]}
 
   @doc """
   Decode an Intel Hex-formatted file
@@ -28,7 +28,7 @@ defmodule IntelHex do
   @doc """
   Decode an Intel Hex-formatted file
   """
-  @spec decode_file(String.t()) :: {:ok, [Record.t()]} | {:error, term()}
+  @spec decode_file(String.t()) :: {:ok, t()} | {:error, term()}
   def decode_file(path) do
     {:ok, decode_file!(path)}
   rescue
