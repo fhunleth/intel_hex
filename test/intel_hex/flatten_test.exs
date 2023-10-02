@@ -7,8 +7,8 @@ defmodule IntelHex.FlattenTest do
     %IntelHex{
       records: [
         %Record{type: :extended_linear_address, address: base_address},
-        %Record{type: :data, address: 0x10, data: [1, 2, 3, 4, 5]},
-        %Record{type: :data, address: 0x20, data: [6, 7, 8, 9, 10]},
+        %Record{type: :data, address: 0x10, data: <<1, 2, 3, 4, 5>>},
+        %Record{type: :data, address: 0x20, data: <<6, 7, 8, 9, 10>>},
         %Record{type: :eof}
       ]
     }

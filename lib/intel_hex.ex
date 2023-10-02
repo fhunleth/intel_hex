@@ -44,7 +44,7 @@ defmodule IntelHex do
   at zero, but if you'd like to start it later, use the `:start` option.
   """
   def flatten_to_list(hex, options \\ []) when is_struct(hex) do
-    Flatten.to_list(hex.records, options)
+    Flatten.to_list(hex, options)
   end
 
   defimpl Inspect do

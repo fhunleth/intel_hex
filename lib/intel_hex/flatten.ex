@@ -1,11 +1,12 @@
 defmodule IntelHex.Flatten do
   @moduledoc false
 
-  def to_list(records, options \\ []) do
+  @spec to_list(IntelHex.t(), keyword()) :: [0..255]
+  def to_list(hex, options \\ []) do
     fill = Keyword.get(options, :fill, 255)
     start = Keyword.get(options, :start, 0)
 
-    to_list(start, 0, records, [], fill)
+    to_list(start, 0, hex.records, [], fill)
   end
 
   defp to_list(_base, _offset, [], _rarray, _fill) do
@@ -44,9 +45,9 @@ defmodule IntelHex.Flatten do
 
     to_list(
       base,
-      offset + padding_amount + length(data),
+      offset + padding_amount + byte_size(data),
       rest,
-      Enum.reverse(data) ++ padding ++ rarray,
+      Enum.reverse(:binary.bin_to_list(data)) ++ padding ++ rarray,
       fill
     )
   end
