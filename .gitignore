@@ -21,6 +21,3 @@ erl_crash.dump
 
 # Ignore package tarball (built via "mix hex.build").
 intel_hex-*.tar
-
-# We don't have any dependencies that we want to lock
-/mix.lock
