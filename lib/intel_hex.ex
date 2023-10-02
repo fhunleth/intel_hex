@@ -3,9 +3,12 @@ defmodule IntelHex do
   Decode Intel HEX files
   """
   alias IntelHex.DecodeError
-  alias IntelHex.Decoder
+
   alias IntelHex.Flatten
   alias IntelHex.Record
+
+  defstruct records: []
+  @type t() :: %__MODULE__{records: [Record.t()]}
 
   @doc """
   Decode one Intel Hex record
@@ -17,16 +20,19 @@ defmodule IntelHex do
     exception in DecodeError -> {:error, exception.message}
   end
 
-  defdelegate decode_record!(string), to: Decoder
+  defdelegate decode_record!(string), to: Record, as: :decode!
 
   @doc """
   Decode all of the hex records in a file or raises File.Error or IntelHex.DecodeError if an error occurs.
   """
-  @spec decode_file!(String.t()) :: [Record.t()] | no_return
+  @spec decode_file!(String.t()) :: t()
   def decode_file!(path) do
-    File.stream!(path)
-    |> Stream.map(&decode_record!/1)
-    |> Enum.to_list()
+    records =
+      File.stream!(path)
+      |> Stream.map(&decode_record!/1)
+      |> Enum.to_list()
+
+    %__MODULE__{records: records}
   end
 
   @doc """
@@ -47,5 +53,7 @@ defmodule IntelHex do
   Gaps are allowed and are filled in by the `:fill` value. Addressing starts
   at zero, but if you'd like to start it later, use the `:start` option.
   """
-  defdelegate flatten_to_list(records, options \\ []), to: Flatten, as: :to_list
+  def flatten_to_list(hex, options \\ []) when is_struct(hex) do
+    Flatten.to_list(hex.records, options)
+  end
 end

@@ -71,9 +71,9 @@ defmodule IntelHexTest do
   end
 
   test "can read a .hex file" do
-    records = IntelHex.decode_file!("test/test.hex")
+    hex = IntelHex.decode_file!("test/test.hex")
 
-    assert records ==
+    assert hex.records ==
              [
                %IntelHex.Record{address: 0, data: [0, 0], type: :extended_linear_address},
                %IntelHex.Record{
