@@ -1,4 +1,4 @@
-defmodule FlattenTest do
+defmodule IntelHex.FlattenTest do
   use ExUnit.Case
 
   alias IntelHex.Record

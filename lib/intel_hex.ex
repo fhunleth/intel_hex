@@ -7,36 +7,26 @@ defmodule IntelHex do
   alias IntelHex.Flatten
   alias IntelHex.Record
 
-  defstruct records: []
-  @type t() :: %__MODULE__{records: [Record.t()]}
+  defstruct path: nil, records: []
+  @type t() :: %__MODULE__{path: String.t() | nil, records: [Record.t()]}
 
   @doc """
-  Decode one Intel Hex record
-  """
-  @spec decode_record(String.t()) :: {:ok, Record.t()} | {:error, term()}
-  def decode_record(string) do
-    {:ok, decode_record!(string)}
-  rescue
-    exception in DecodeError -> {:error, exception}
-  end
+  Decode an Intel Hex-formatted file
 
-  defdelegate decode_record!(string), to: Record, as: :decode!
-
-  @doc """
-  Decode all of the hex records in a file or raises File.Error or IntelHex.DecodeError if an error occurs.
+  Raises File.Error or IntelHex.DecodeError if an error occurs.
   """
   @spec decode_file!(String.t()) :: t()
   def decode_file!(path) do
     records =
       File.stream!(path)
-      |> Stream.map(&decode_record!/1)
+      |> Stream.map(&Record.decode!/1)
       |> Enum.to_list()
 
-    %__MODULE__{records: records}
+    %__MODULE__{path: path, records: records}
   end
 
   @doc """
-  Decode all of the hex records in a file.
+  Decode an Intel Hex-formatted file
   """
   @spec decode_file(String.t()) :: {:ok, [Record.t()]} | {:error, term()}
   def decode_file(path) do

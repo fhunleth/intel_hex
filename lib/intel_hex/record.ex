@@ -17,7 +17,17 @@ defmodule IntelHex.Record do
   @type t() :: %IntelHex.Record{address: non_neg_integer, data: list, type: types}
 
   @doc """
-  Decode one hex record.
+  Decode one Intel Hex record
+  """
+  @spec decode(String.t()) :: {:ok, Record.t()} | {:error, term()}
+  def decode(string) do
+    {:ok, decode!(string)}
+  rescue
+    exception in DecodeError -> {:error, exception}
+  end
+
+  @doc """
+  Decode one Intel Hex record
 
   If the record is not in Intel Hex format, an exception will be raised.
   """
