@@ -56,4 +56,12 @@ defmodule IntelHex do
   def flatten_to_list(hex, options \\ []) when is_struct(hex) do
     Flatten.to_list(hex.records, options)
   end
+
+  defimpl Inspect do
+    import Inspect.Algebra
+
+    def inspect(hex, _opts) do
+      concat(["%IntelHex{num_records: #{length(hex.records)}}"])
+    end
+  end
 end
