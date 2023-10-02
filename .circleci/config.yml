@@ -1,17 +1,55 @@
-# Elixir CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-elixir/ for more details
-version: 2
+version: 2.1
+
+latest: &latest
+  pattern: "^1.15.6-erlang-26.*$"
+
 jobs:
-  build:
+  build-test:
+    parameters:
+      tag:
+        type: string
     docker:
-      - image: circleci/elixir:1.7
+      - image: hexpm/elixir:<< parameters.tag >>
     working_directory: ~/repo
+    environment:
+      LC_ALL: C.UTF-8
     steps:
       - checkout
-      - run: mix local.hex --force && mix local.rebar --force
-      - run: mix deps.get --only test
+      - run:
+          name: Install hex and rebar
+          command: |
+            mix local.hex --force
+            mix local.rebar --force
+      - restore_cache:
+          keys:
+            - v1-mix-cache-<< parameters.tag >>-{{ checksum "mix.lock" }}
+      - run: mix deps.get
       - run: mix test
-      - run: mix docs
-      - run: mix hex.build
-      - run: mix format --check-formatted
+      - when:
+          condition:
+            matches: { <<: *latest, value: << parameters.tag >> }
+          steps:
+            - run: mix format --check-formatted
+            - run: mix deps.unlock --check-unused
+            - run: mix docs
+            - run: mix hex.build
+            - run: mix credo -a --strict
+            - run: mix dialyzer
+      - save_cache:
+          key: v1-mix-cache-<< parameters.tag >>-{{ checksum "mix.lock" }}
+          paths:
+            - _build
+            - deps
+
+workflows:
+  checks:
+    jobs:
+      - build-test:
+          name: << matrix.tag >>
+          matrix:
+            parameters:
+              tag: [
+                1.15.6-erlang-26.1.1-alpine-3.18.2,
+                1.14.5-erlang-25.3.2-alpine-3.18.0,
+                1.13.4-erlang-25.3.2-alpine-3.18.0
+              ]
