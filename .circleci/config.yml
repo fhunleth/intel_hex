@@ -50,6 +50,5 @@ workflows:
             parameters:
               tag: [
                 1.15.6-erlang-26.1.1-alpine-3.18.2,
-                1.14.5-erlang-25.3.2-alpine-3.18.0,
-                1.13.4-erlang-25.3.2-alpine-3.18.0
+                1.14.5-erlang-25.3.2-alpine-3.18.0
               ]

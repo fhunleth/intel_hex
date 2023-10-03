@@ -8,7 +8,7 @@ defmodule IntelHex.MixProject do
     [
       app: :intel_hex,
       version: @version,
-      elixir: "~> 1.13",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       make_targets: ["all"],
       make_clean: ["mix_clean"],
