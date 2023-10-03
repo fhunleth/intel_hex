@@ -74,7 +74,7 @@ defmodule IntelHex.Record do
     info_to_record(record.address, 5, <<record.address::32>>)
   end
 
-  def info_to_record(address, type, data) do
+  defp info_to_record(address, type, data) do
     payload = <<byte_size(data), address::16, type, data::binary>>
     ":#{Base.encode16(payload)}#{Base.encode16(<<checksum(payload)>>)}\n"
   end

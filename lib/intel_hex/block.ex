@@ -30,14 +30,14 @@ defmodule IntelHex.Block do
     end
   end
 
-  def remove_overlaps(blocks) do
+  defp remove_overlaps(blocks) do
     blocks |> remove_overlaps_r([]) |> Enum.reverse()
   end
 
-  def remove_overlaps_r([], acc), do: acc
-  def remove_overlaps_r([b1], acc), do: [b1 | acc]
+  defp remove_overlaps_r([], acc), do: acc
+  defp remove_overlaps_r([b1], acc), do: [b1 | acc]
 
-  def remove_overlaps_r([b1, b2 | rest], acc) do
+  defp remove_overlaps_r([b1, b2 | rest], acc) do
     addr = b1.address + byte_size(b1.data)
 
     cond do

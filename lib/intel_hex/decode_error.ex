@@ -4,6 +4,7 @@ defmodule IntelHex.DecodeError do
     :message
   ]
 
+  @impl true
   def message(%{line: line, message: message}) do
     "#{line}: #{message}"
   end

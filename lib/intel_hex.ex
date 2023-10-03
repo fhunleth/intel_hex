@@ -43,6 +43,7 @@ defmodule IntelHex do
   Gaps are allowed and are filled in by the `:fill` value. Addressing starts
   at zero, but if you'd like to start it later, use the `:start` option.
   """
+  @spec flatten_to_list(t(), keyword()) :: [0..255]
   def flatten_to_list(hex, options \\ []) when is_struct(hex) do
     Flatten.to_list(hex, options)
   end
@@ -50,6 +51,7 @@ defmodule IntelHex do
   defimpl Inspect do
     import Inspect.Algebra
 
+    @impl Inspect
     def inspect(hex, _opts) do
       concat(["%IntelHex{num_records: #{length(hex.records)}}"])
     end
