@@ -1,11 +1,131 @@
 defmodule IntelHex.Block do
   @moduledoc false
+  import Bitwise
+
+  alias IntelHex.Record
 
   defstruct [:address, :data]
   @type t() :: %__MODULE__{address: non_neg_integer(), data: binary()}
 
+  @doc """
+  Create a new block
+  """
+  @spec new(non_neg_integer(), binary()) :: t()
+  def new(address, data) when is_integer(address) and is_binary(data) do
+    %__MODULE__{address: address, data: data}
+  end
+
+  @doc """
+  Convert a list of records to memory blocks
+
+  The returned list of blocks is sorted, merged, and any overlaps resolved.
+  """
+  @spec records_to_blocks([Record.t()]) :: [t()]
   def records_to_blocks(records) do
     to_blocks(records, 0, [])
+  end
+
+  @doc """
+  Turn a list of memory blocks back to records
+
+  Only linear addressing is supported.
+
+  Options:
+  * `:block_size` - the max data bytes per record. (defaults to 16)
+  """
+  @spec blocks_to_records([t()], keyword()) :: [Record.t()]
+  def blocks_to_records(blocks, opts \\ []) do
+    _block_size = Keyword.get(opts, :block_size, 16)
+
+    to_records(blocks, -1, [])
+  end
+
+  defp to_records([], _base_address, acc) do
+    [Record.eof() | acc]
+    |> Enum.reverse()
+  end
+
+  defp to_records([block | rest], base_address, acc) do
+    data_base_address = block.address &&& 0xFFFF0000
+    blocks64 = split_64k(block)
+
+    {new_base_address, new_acc} =
+      data_64k_to_records_r(base_address, data_base_address, blocks64, acc)
+
+    to_records(rest, new_base_address, new_acc)
+  end
+
+  defp data_64k_to_records_r(current_base_address, _base_address, [], acc) do
+    {current_base_address, acc}
+  end
+
+  defp data_64k_to_records_r(current_base_address, base_address, blocks64, acc)
+       when current_base_address != base_address do
+    # Move the base address
+    data_64k_to_records_r(base_address, base_address, blocks64, [
+      Record.extended_linear_address(base_address) | acc
+    ])
+  end
+
+  defp data_64k_to_records_r(base_address, base_address, [block64 | rest], acc) do
+    new_acc =
+      chunk_data_to_records_r(base_address, block64.address, block64.data, acc)
+
+    data_64k_to_records_r(base_address, base_address + 0x10000, rest, new_acc)
+  end
+
+  defp chunk_data_to_records_r(_base_address, _address, <<>>, acc), do: acc
+
+  defp chunk_data_to_records_r(base_address, address, data, acc) do
+    chunk = binary_slice(data, 0, 16)
+    chunk_size = byte_size(chunk)
+    record = Record.data(address - base_address, chunk)
+    new_acc = [record | acc]
+
+    if chunk_size == 16 do
+      chunk_data_to_records_r(
+        base_address,
+        address + 16,
+        binary_part(data, 16, byte_size(data) - 16),
+        new_acc
+      )
+    else
+      new_acc
+    end
+  end
+
+  defp split_64k(block) do
+    # Split a block into chunks that will be on 64K boundaries
+    base_address = block.address &&& 0xFFFF0000
+    first_chunk_size = min(base_address + 0x10000 - block.address, byte_size(block.data))
+    first_chunk = binary_part(block.data, 0, first_chunk_size)
+    first_block = %__MODULE__{address: block.address, data: first_chunk}
+
+    aligned_data =
+      binary_part(block.data, first_chunk_size, byte_size(block.data) - first_chunk_size)
+
+    aligned_blocks = split_64k_aligned(base_address + 0x10000, aligned_data, [])
+
+    [first_block | aligned_blocks]
+  end
+
+  defp split_64k_aligned(address, data, acc) do
+    data_size = byte_size(data)
+
+    cond do
+      data_size > 0x10000 ->
+        chunk = binary_part(data, 0, 0x10000)
+        rest = binary_part(data, 0x10000, data_size)
+        block = %__MODULE__{address: address, data: chunk}
+        split_64k_aligned(address + 0x10000, rest, [block | acc])
+
+      data_size > 0 ->
+        block = %__MODULE__{address: address, data: data}
+        [block | acc] |> Enum.reverse()
+
+      true ->
+        acc
+    end
   end
 
   defp to_blocks([], _base_address, acc) do

@@ -2,10 +2,10 @@ defmodule IntelHex.Record do
   @moduledoc """
   Information for one line in an Intel HEX file
   """
-  alias IntelHex.DecodeError
   import Bitwise
+  alias IntelHex.DecodeError
 
-  defstruct address: 0, data: [], type: :data
+  defstruct address: 0, data: <<>>, type: :data
 
   @type type() ::
           :data
@@ -40,6 +40,33 @@ defmodule IntelHex.Record do
     |> length_ok?()
     |> checksum_ok?()
     |> to_record()
+  end
+
+  @doc """
+  Helper for creating an EOF record
+  """
+  @spec eof() :: %__MODULE__{type: :eof, data: <<>>, address: 0}
+  def eof() do
+    %__MODULE__{type: :eof}
+  end
+
+  @doc """
+  Helper for creating an extended linear address record
+  """
+  @spec extended_linear_address(non_neg_integer) :: %__MODULE__{
+          type: :extended_linear_address,
+          address: non_neg_integer
+        }
+  def extended_linear_address(address) when Bitwise.band(address, 0xFFFF) == 0 do
+    %__MODULE__{type: :extended_linear_address, address: address}
+  end
+
+  @doc """
+  Helper for creating data records
+  """
+  @spec data(non_neg_integer, binary()) :: t()
+  def data(address, data) when address < 0x10000 and is_binary(data) do
+    %__MODULE__{type: :data, address: address, data: data}
   end
 
   @doc """
