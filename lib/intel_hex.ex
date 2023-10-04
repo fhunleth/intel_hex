@@ -4,11 +4,12 @@ defmodule IntelHex do
   """
   alias IntelHex.DecodeError
 
+  alias IntelHex.Block
   alias IntelHex.Flatten
   alias IntelHex.Record
 
-  defstruct path: nil, records: []
-  @type t() :: %__MODULE__{path: String.t(), records: [Record.t()]}
+  defstruct path: nil, records: [], blocks: []
+  @type t() :: %__MODULE__{path: String.t(), records: [Record.t()], blocks: [Block.t()]}
 
   @doc """
   Load an Intel Hex-formatted file into memory
@@ -17,12 +18,13 @@ defmodule IntelHex do
   """
   @spec load!(Path.t()) :: t()
   def load!(path) do
-    records =
+    blocks =
       File.stream!(path)
       |> Stream.map(&Record.decode!/1)
       |> Enum.to_list()
+      |> Block.records_to_blocks()
 
-    %__MODULE__{path: path, records: records}
+    %__MODULE__{path: path, blocks: blocks}
   end
 
   @doc """
@@ -45,7 +47,7 @@ defmodule IntelHex do
   """
   @spec flatten_to_list(t(), keyword()) :: [0..255]
   def flatten_to_list(hex, options \\ []) when is_struct(hex) do
-    Flatten.to_list(hex, options)
+    hex.blocks |> Block.blocks_to_records() |> Flatten.to_list(options)
   end
 
   defimpl Inspect do
@@ -53,7 +55,7 @@ defmodule IntelHex do
 
     @impl Inspect
     def inspect(hex, _opts) do
-      concat(["%IntelHex{num_records: #{length(hex.records)}}"])
+      concat(["%IntelHex{num_blocks: #{length(hex.blocks)}}"])
     end
   end
 end

@@ -4,14 +4,15 @@ defmodule IntelHex.FlattenTest do
   alias IntelHex.Record
 
   defp test_hex(base_address \\ 0) do
-    %IntelHex{
-      records: [
+    blocks =
+      IntelHex.Block.records_to_blocks([
         %Record{type: :extended_linear_address, address: base_address},
         %Record{type: :data, address: 0x10, data: <<1, 2, 3, 4, 5>>},
         %Record{type: :data, address: 0x20, data: <<6, 7, 8, 9, 10>>},
         %Record{type: :eof}
-      ]
-    }
+      ])
+
+    %IntelHex{blocks: blocks}
   end
 
   test "flattens records" do
@@ -122,50 +123,6 @@ defmodule IntelHex.FlattenTest do
              255,
              255,
              255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             1,
-             2,
-             3,
-             4,
-             5,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             255,
-             6,
-             7,
-             8,
-             9,
-             10
-           ]
-  end
-
-  test "flattens records with base offset and start address" do
-    result = test_hex(0x10) |> IntelHex.flatten_to_list(start: 0x10)
-
-    assert result == [
              255,
              255,
              255,
