@@ -10,8 +10,9 @@ used for firmware images on microcontrollers.
 Here's an example use:
 
 ```elixir
+# Load a file. Note the little memory map of the file contents
 iex> hex = IntelHex.load!("./test/test.hex")
-%IntelHex{}
+%IntelHex{0x0->26B|0x1B->15B|0x2B->31B}
 
 # Take a look at the first two 16-bit integers
 iex> <<x::little-16, y::little-16>> = IntelHex.get(hex, 0, 4); {x, y}
@@ -19,7 +20,7 @@ iex> <<x::little-16, y::little-16>> = IntelHex.get(hex, 0, 4); {x, y}
 
 # Change them to {1, 2}
 iex> hex = IntelHex.set(hex, 0, <<1::little-16, 2::little-16>>)
-%IntelHex{}
+%IntelHex{0x0->26B|0x1B->15B|0x2B->31B}
 
 # Check that it worked.
 iex> <<x::little-16, y::little-16>> = IntelHex.get(hex, 0, 4); {x,y}
@@ -38,7 +39,7 @@ in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:intel_hex, "~> 0.1.0"}
+    {:intel_hex, "~> 0.2.0"}
   ]
 end
 ```

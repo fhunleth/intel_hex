@@ -105,4 +105,8 @@ defmodule IntelHexTest do
            :00000001FF
            """
   end
+
+  test "inspect" do
+    assert inspect(IntelHex.load!("test/test.hex")) == "%IntelHex{0x0->26B|0x1B->15B|0x2B->31B}"
+  end
 end

@@ -114,7 +114,23 @@ defmodule IntelHex do
 
     @impl Inspect
     def inspect(hex, _opts) do
-      concat(["%IntelHex{num_blocks: #{length(hex.blocks)}}"])
+      memory_map =
+        hex.blocks
+        |> Enum.map(&short_format/1)
+        |> Enum.intersperse("|")
+
+      str = IO.chardata_to_string(["%IntelHex{", memory_map, "}"])
+      concat([str])
+    end
+
+    defp short_format(block) do
+      [
+        "0x",
+        Integer.to_string(block.address, 16),
+        "->",
+        Integer.to_string(byte_size(block.data)),
+        "B"
+      ]
     end
   end
 end
