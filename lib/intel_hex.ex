@@ -5,7 +5,6 @@ defmodule IntelHex do
   alias IntelHex.DecodeError
 
   alias IntelHex.Block
-  alias IntelHex.Flatten
   alias IntelHex.Operations
   alias IntelHex.Record
 
@@ -98,18 +97,6 @@ defmodule IntelHex do
     # The algorithm here abuses the de-overlap code during normalization
     # I.e., add the new data as a block to the end and normalize.
     %{hex | blocks: Block.normalize(hex.blocks ++ [Block.new(address, data)])}
-  end
-
-  @doc """
-  Flatten a list of records to a list of memory values.
-
-  This runs though the records. The records must be an ascending order.
-  Gaps are allowed and are filled in by the `:fill` value. Addressing starts
-  at zero, but if you'd like to start it later, use the `:start` option.
-  """
-  @spec flatten_to_list(t(), keyword()) :: [0..255]
-  def flatten_to_list(hex, options \\ []) when is_struct(hex) do
-    hex.blocks |> Block.blocks_to_records() |> Flatten.to_list(options)
   end
 
   defimpl Inspect do
