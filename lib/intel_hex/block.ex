@@ -64,7 +64,7 @@ defmodule IntelHex.Block do
   manually creating block lists and unsure whether there are overlaps or
   adjacent blocks, then it's recommended to run this.
   """
-  @spec normalize([t()]) :: t()
+  @spec normalize([t()]) :: [t()]
   def normalize(blocks) do
     blocks
     |> Enum.sort(&overlap_sort/2)
