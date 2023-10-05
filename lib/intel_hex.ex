@@ -6,6 +6,7 @@ defmodule IntelHex do
 
   alias IntelHex.Block
   alias IntelHex.Flatten
+  alias IntelHex.Operations
   alias IntelHex.Record
 
   defstruct path: nil, records: [], blocks: []
@@ -36,6 +37,54 @@ defmodule IntelHex do
   rescue
     exception in [File.Error, DecodeError] ->
       {:error, exception}
+  end
+
+  @doc """
+  Save data to an Intel Hex-formatted file
+  """
+  @spec save(t(), Path.t(), keyword()) :: :ok
+  def save(hex, path, options \\ []) do
+    hex.blocks
+    |> Block.blocks_to_records(options)
+    |> Stream.map(&Record.encode/1)
+    |> Stream.into(File.stream!(path))
+    |> Stream.run()
+  end
+
+  @doc """
+  Only keep data within the specified address range
+  """
+  @spec crop(t(), non_neg_integer(), non_neg_integer()) :: t()
+  def crop(hex, address, length) do
+    new_blocks = Operations.crop(hex.blocks, address, length)
+    %{hex | blocks: new_blocks}
+  end
+
+  @doc """
+  Get the data at a specified address
+
+  Options:
+  * `:fill` - value to use when none exists (defaults to `0`)
+  """
+  @spec get(t(), non_neg_integer(), non_neg_integer(), fill: 0..255) :: binary()
+  def get(hex, address, num_bytes, options \\ []) do
+    fill_value = Keyword.get(options, :fill, 0)
+
+    hex.blocks
+    |> Operations.crop(address, num_bytes)
+    |> Operations.fill_gaps(address, num_bytes, fill_value)
+    |> hd()
+    |> Map.get(:data)
+  end
+
+  @doc """
+  Set a set of bytes at the specified address
+  """
+  @spec set(t(), non_neg_integer(), binary()) :: t()
+  def set(hex, address, data) do
+    # The algorithm here abuses the de-overlap code during normalization
+    # I.e., add the new data as a block to the end and normalize.
+    %{hex | blocks: Block.normalize(hex.blocks ++ [Block.new(address, data)])}
   end
 
   @doc """
