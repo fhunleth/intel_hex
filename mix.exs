@@ -45,7 +45,7 @@ defmodule IntelHex.MixProject do
   end
 
   defp description do
-    "Decode Intel Hex formatted files"
+    "Load, modify and save Intel HEX formatted files"
   end
 
   defp package do
