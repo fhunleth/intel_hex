@@ -71,11 +71,12 @@ defmodule IntelHex.BlockTest do
     end
 
     test "large block spanning 64K boundaries" do
-      data = :rand.bytes(70_000)
+      data = :rand.bytes(0x10000 * 3)
       blocks = [Block.new(0x8010000, data)]
 
       first_64k = binary_part(data, 0, 0x10000)
-      second_64k = binary_part(data, 0x10000, byte_size(data) - 0x10000)
+      second_64k = binary_part(data, 0x10000, 0x10000)
+      third_64k = binary_part(data, 0x20000, 0x10000)
 
       assert Block.blocks_to_records(blocks) ==
                [
@@ -94,6 +95,14 @@ defmodule IntelHex.BlockTest do
                    }
                  ] ++
                  data_records(second_64k) ++
+                 [
+                   %IntelHex.Record{
+                     address: 0x8030000,
+                     data: <<>>,
+                     type: :extended_linear_address
+                   }
+                 ] ++
+                 data_records(third_64k) ++
                  [%IntelHex.Record{address: 0, data: <<>>, type: :eof}]
     end
 

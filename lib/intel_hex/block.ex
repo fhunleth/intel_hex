@@ -170,7 +170,7 @@ defmodule IntelHex.Block do
     cond do
       data_size > 0x10000 ->
         chunk = binary_part(data, 0, 0x10000)
-        rest = binary_part(data, 0x10000, data_size)
+        rest = binary_part(data, 0x10000, data_size - 0x10000)
         block = %__MODULE__{address: address, data: chunk}
         split_64k_aligned(address + 0x10000, rest, [block | acc])
 
