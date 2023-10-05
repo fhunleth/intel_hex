@@ -1,6 +1,12 @@
 defmodule IntelHex do
   @moduledoc """
-  Decode Intel HEX files
+  Manipulate Intel HEX files
+
+  This is the main interface for loading, modifying and saving Intel HEX files.
+  In general, you'll want to use methods here for most operations.
+
+  Internally, data is stored as lists of `IntelHex.Block` structs. See that
+  module for transformations that aren't possible with the main functions.
   """
   alias IntelHex.DecodeError
 
@@ -9,6 +15,10 @@ defmodule IntelHex do
   alias IntelHex.Record
 
   defstruct path: nil, blocks: []
+
+  @typedoc """
+  Primary type for handling Intel Hex file data
+  """
   @type t() :: %__MODULE__{path: String.t(), blocks: [Block.t()]}
 
   @doc """
