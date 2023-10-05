@@ -3,30 +3,37 @@
 [![CircleCI](https://circleci.com/gh/fhunleth/intel_hex.svg?style=svg)](https://circleci.com/gh/fhunleth/intel_hex)
 [![Hex version](https://img.shields.io/hexpm/v/intel_hex.svg "Hex version")](https://hex.pm/packages/intel_hex)
 
-This is a small library to help decode [Intel HEX records](https://en.wikipedia.org/wiki/Intel_HEX). This file format is frequently used for firmware images on microcontrollers.
+This is a library for loading, modifying and saving [Intel HEX
+files](https://en.wikipedia.org/wiki/Intel_HEX). This file format is frequently
+used for firmware images on microcontrollers.
 
-The main interface returns a low-level view of the records:
-
-```elixir
-iex(2)> hex = IntelHex.load!("./test/test.hex")
-%IntelHex{num_records: 7}
-```
-
-If you'd like the records to be flattened back into a memory image, you can run `IntelHex.flatten_to_list/2` against the records:
+Here's an example use:
 
 ```elixir
-iex(2)> IntelHex.flatten_to_list(hex)
-[2, 24, 0, 2, 24, 3, 8, 253, 9, 2, 0, 2, 24, 11, 11, 50, 11, 60, 34, 2, 24, 19,
- 10, 236, 11, 0, 255, 2, 24, 27, 70, 154, 2, 29, 225, 2, 24, 35, 228, 255, 225,
- 64, 255, 2, 24, 43, 127, 7, 34, 211, ...]
-```
+iex> hex = IntelHex.load!("./test/test.hex")
+%IntelHex{}
 
-`IntelHex.flatten_to_list/2` takes keyword parameters to specify start offsets and default fill bytes for skipped locations. The default filler byte is 255 which can be seen in the above examples if you squint hard enough.
+# Take a look at the first two 16-bit integers
+iex> <<x::little-16, y::little-16>> = IntelHex.get(hex, 0, 4); {x, y}
+{6146, 512}
+
+# Change them to {1, 2}
+iex> hex = IntelHex.set(hex, 0, <<1::little-16, 2::little-16>>)
+%IntelHex{}
+
+# Check that it worked.
+iex> <<x::little-16, y::little-16>> = IntelHex.get(hex, 0, 4); {x,y}
+{1, 2}
+
+# Save it to a new file
+iex> IntelHex.save(hex, "new.hex")
+:ok
+```
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `intel_hex` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `intel_hex` to your list of dependencies
+in `mix.exs`:
 
 ```elixir
 def deps do
@@ -35,12 +42,3 @@ def deps do
   ]
 end
 ```
-
-## Future work
-
-The library has a couple major missing features:
-
-1. Support for anything besides 16-bit Intel Hex files
-1. Encoder support
-
-I don't currently have a use case for those, but if you do, I'd certainly work with you to get these included.
