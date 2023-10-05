@@ -77,10 +77,10 @@ defmodule IntelHex.RecordTest do
 
   describe "encode/1" do
     test "encodes and decodes the same" do
-      assert decode_encode_same?(":00000001FF\n")
-      assert decode_encode_same?(":020000040000FA\n")
-      assert decode_encode_same?(":020000040800F2\n")
-      assert decode_encode_same?(":10000000081000200D220008113C0008AB28000851\n")
+      assert decode_encode_same?(":00000001FF\r\n")
+      assert decode_encode_same?(":020000040000FA\r\n")
+      assert decode_encode_same?(":020000040800F2\r\n")
+      assert decode_encode_same?(":10000000081000200D220008113C0008AB28000851\r\n")
     end
   end
 

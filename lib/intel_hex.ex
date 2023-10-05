@@ -9,8 +9,18 @@ defmodule IntelHex do
   alias IntelHex.Operations
   alias IntelHex.Record
 
-  defstruct path: nil, records: [], blocks: []
-  @type t() :: %__MODULE__{path: String.t(), records: [Record.t()], blocks: [Block.t()]}
+  defstruct path: nil, blocks: []
+  @type t() :: %__MODULE__{path: String.t(), blocks: [Block.t()]}
+
+  @doc """
+  Create an empty hex file
+
+  Use `IntelHex.set/3` or other functions to populate it.
+  """
+  @spec new() :: %__MODULE__{path: String.t(), blocks: []}
+  def new() do
+    %__MODULE__{path: "", blocks: []}
+  end
 
   @doc """
   Load an Intel Hex-formatted file into memory
@@ -41,6 +51,9 @@ defmodule IntelHex do
 
   @doc """
   Save data to an Intel Hex-formatted file
+
+  Options:
+  * `:block_size` - the max data bytes per record. (defaults to 16)
   """
   @spec save(t(), Path.t(), keyword()) :: :ok
   def save(hex, path, options \\ []) do

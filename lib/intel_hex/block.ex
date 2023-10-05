@@ -51,9 +51,9 @@ defmodule IntelHex.Block do
   """
   @spec blocks_to_records([t()], keyword()) :: [Record.t()]
   def blocks_to_records(blocks, opts \\ []) do
-    _block_size = Keyword.get(opts, :block_size, 16)
+    block_size = Keyword.get(opts, :block_size, 16) |> max(1) |> min(255)
 
-    to_records(blocks, -1, [])
+    to_records(blocks, -1, block_size, [])
   end
 
   @doc """
@@ -94,53 +94,54 @@ defmodule IntelHex.Block do
     b2.address + byte_size(b2.data) > b1.address
   end
 
-  defp to_records([], _base_address, acc) do
+  defp to_records([], _base_address, _block_size, acc) do
     [Record.eof() | acc]
     |> Enum.reverse()
   end
 
-  defp to_records([block | rest], base_address, acc) do
+  defp to_records([block | rest], base_address, block_size, acc) do
     data_base_address = block.address &&& 0xFFFF0000
     blocks64 = split_64k(block)
 
     {new_base_address, new_acc} =
-      data_64k_to_records_r(base_address, data_base_address, blocks64, acc)
+      data_64k_to_records_r(base_address, data_base_address, blocks64, block_size, acc)
 
-    to_records(rest, new_base_address, new_acc)
+    to_records(rest, new_base_address, block_size, new_acc)
   end
 
-  defp data_64k_to_records_r(current_base_address, _base_address, [], acc) do
+  defp data_64k_to_records_r(current_base_address, _base_address, [], _block_size, acc) do
     {current_base_address, acc}
   end
 
-  defp data_64k_to_records_r(current_base_address, base_address, blocks64, acc)
+  defp data_64k_to_records_r(current_base_address, base_address, blocks64, block_size, acc)
        when current_base_address != base_address do
     # Move the base address
-    data_64k_to_records_r(base_address, base_address, blocks64, [
+    data_64k_to_records_r(base_address, base_address, blocks64, block_size, [
       Record.extended_linear_address(base_address) | acc
     ])
   end
 
-  defp data_64k_to_records_r(base_address, base_address, [block64 | rest], acc) do
+  defp data_64k_to_records_r(base_address, base_address, [block64 | rest], block_size, acc) do
     new_acc =
-      chunk_data_to_records_r(base_address, block64.address, block64.data, acc)
+      chunk_data_to_records_r(base_address, block64.address, block64.data, block_size, acc)
 
-    data_64k_to_records_r(base_address, base_address + 0x10000, rest, new_acc)
+    data_64k_to_records_r(base_address, base_address + 0x10000, rest, block_size, new_acc)
   end
 
-  defp chunk_data_to_records_r(_base_address, _address, <<>>, acc), do: acc
+  defp chunk_data_to_records_r(_base_address, _address, <<>>, _block_size, acc), do: acc
 
-  defp chunk_data_to_records_r(base_address, address, data, acc) do
-    chunk = binary_slice(data, 0, 16)
+  defp chunk_data_to_records_r(base_address, address, data, block_size, acc) do
+    chunk = binary_slice(data, 0, block_size)
     chunk_size = byte_size(chunk)
     record = Record.data(address - base_address, chunk)
     new_acc = [record | acc]
 
-    if chunk_size == 16 do
+    if chunk_size == block_size do
       chunk_data_to_records_r(
         base_address,
-        address + 16,
-        binary_part(data, 16, byte_size(data) - 16),
+        address + block_size,
+        binary_part(data, block_size, byte_size(data) - block_size),
+        block_size,
         new_acc
       )
     else

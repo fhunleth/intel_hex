@@ -78,7 +78,7 @@ defmodule IntelHex.Record do
   end
 
   def encode(%__MODULE__{type: :eof}) do
-    ":00000001FF\n"
+    ":00000001FF\r\n"
   end
 
   def encode(%__MODULE__{type: :extended_segment_address} = record) do
@@ -103,7 +103,7 @@ defmodule IntelHex.Record do
 
   defp info_to_record(address, type, data) do
     payload = <<byte_size(data), address::16, type, data::binary>>
-    ":#{Base.encode16(payload)}#{Base.encode16(<<checksum(payload)>>)}\n"
+    ":#{Base.encode16(payload)}#{Base.encode16(<<checksum(payload)>>)}\r\n"
   end
 
   defp strip_start_code(<<?:, rest::binary>>), do: rest
