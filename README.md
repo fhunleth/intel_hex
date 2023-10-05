@@ -39,7 +39,7 @@ in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:intel_hex, "~> 0.2.0"}
+    {:intel_hex, "~> 0.2.1"}
   ]
 end
 ```
