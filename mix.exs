@@ -17,9 +17,12 @@ defmodule IntelHex.MixProject do
       package: package(),
       docs: docs(),
       dialyzer: dialyzer(),
-      deps: deps(),
-      preferred_cli_env: %{docs: :docs, "hex.build": :docs, "hex.publish": :docs}
+      deps: deps()
     ]
+  end
+
+  def cli do
+    [preferred_envs: %{docs: :docs, "hex.build": :docs, "hex.publish": :docs}]
   end
 
   def application do
