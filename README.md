@@ -1,7 +1,9 @@
 # IntelHex
 
-[![CircleCI](https://circleci.com/gh/fhunleth/intel_hex.svg?style=svg)](https://circleci.com/gh/fhunleth/intel_hex)
 [![Hex version](https://img.shields.io/hexpm/v/intel_hex.svg "Hex version")](https://hex.pm/packages/intel_hex)
+[![API docs](https://img.shields.io/hexpm/v/intel_hex.svg?label=hexdocs "API docs")](https://intel-hex.hexdocs.pm/IntelHex.html)
+[![Nerves compatibility](https://compatibility.nerves-project.org/badge/intel_hex.svg)](https://compatibility.nerves-project.org/packages/intel_hex)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/fhunleth/intel_hex/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/fhunleth/intel_hex/tree/main)
 
 This is a library for loading, modifying and saving [Intel HEX
 files](https://en.wikipedia.org/wiki/Intel_HEX). This file format is frequently
